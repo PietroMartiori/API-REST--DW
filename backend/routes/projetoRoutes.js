@@ -1,12 +1,12 @@
-import { Router } from "express";
-import ProjetoController from "../controllers/ProjetoController.js";
+const express = require('express');
+const router = express.Router();
+const projectController = require('../controllers/ProjetoController');
+const { validateProject } = require('../middlewares/validation');
 
-const router = Router();
+router.get('/', projectController.getAllProjects);
+router.get('/:id', projectController.getProjectById);
+router.post('/', validateProject, projectController.createProject);
+router.put('/:id', validateProject, projectController.updateProject);
+router.delete('/:id', projectController.deleteProject);
 
-router.get("/", ProjetoController.getAll);
-router.get("/:id", ProjetoController.getById);
-router.post("/", ProjetoController.create);
-router.put("/:id", ProjetoController.update);
-router.delete("/:id", ProjetoController.delete);
-
-export default router;
+module.exports = router;

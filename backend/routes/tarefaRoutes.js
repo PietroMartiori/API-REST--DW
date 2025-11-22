@@ -1,11 +1,13 @@
-import { Router } from "express";
-import TarefaController from "../controllers/TarefaController.js";
+const express = require('express');
+const router = express.Router();
+const taskController = require('../controllers/TarefaController.js');
+const { validateTask, validateTaskUpdate } = require('../middlewares/validation.js');
 
-const router = Router();
+router.get('/', taskController.getAllTasks);
+router.get('/:id', taskController.getTaskById);
+router.post('/', validateTask, taskController.createTask);
+router.put('/:id', validateTaskUpdate, taskController.updateTask);
+router.delete('/:id', taskController.deleteTask);
+router.get('/project/:projectId', taskController.getTasksByProject);
 
-router.get("/:projeto_id", TarefaController.getAllByProjeto);
-router.post("/", TarefaController.create);
-router.put("/:id/status", TarefaController.updateStatus);
-router.delete("/:id", TarefaController.delete);
-
-export default router;
+module.exports = router;

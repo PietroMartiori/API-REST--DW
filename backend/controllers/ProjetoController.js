@@ -1,27 +1,54 @@
-import ProjetoModel from "../models/ProjetoModel.js";
+const projectService = require('../services/projetoService.js');
 
-class ProjetoController {
-
-  static async getAll(req, res) {
-    res.json(await ProjetoModel.getAll());
+const createProject = async (req, res) => {
+  try {
+    const newProject = await projectService.createProject(req.body);
+    res.status(201).json(newProject);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
+};
 
-  static async getById(req, res) {
-    res.json(await ProjetoModel.getById(req.params.id));
+const updateProject = async (req, res) => {
+  try {
+    const updatedProject = await projectService.updateProject(req.params.id, req.body);
+    res.json(updatedProject);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
   }
+};
 
-  static async create(req, res) {
-    res.json(await ProjetoModel.create(req.body));
+const deleteProject = async (req, res) => {
+  try {
+    const result = await projectService.deleteProject(req.params.id);
+    res.status(204).json(result);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
   }
+};
 
-  static async update(req, res) {
-    res.json(await ProjetoModel.update(req.params.id, req.body));
+const getAllProjects = async (req, res) => {
+  try {
+    const projects = await projectService.getAllProjects();
+    res.json(projects);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro interno' });
   }
+};
 
-  static async delete(req, res) {
-    await ProjetoModel.delete(req.params.id);
-    res.json({ message: "Projeto removido" });
+const getProjectById = async (req, res) => {
+  try {
+    const project = await projectService.getProjectById(req.params.id);
+    res.json(project);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
   }
-}
+};
 
-export default ProjetoController;
+module.exports = {
+  createProject,
+  updateProject,
+  deleteProject,
+  getAllProjects,
+  getProjectById
+};

@@ -1,24 +1,68 @@
-import TarefaModel from "../models/TarefaModel.js";
+const taskService = require('../services/tarefaService.js');
 
-class TarefaController {
-
-  static async getAllByProjeto(req, res) {
-    res.json(await TarefaModel.getAllByProjeto(req.params.projeto_id));
+const createTask = async (req, res) => {
+  try {
+    const newTask = await taskService.createTask(req.body);
+    res.status(201).json(newTask);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
+};
 
-  static async create(req, res) {
-    res.json(await TarefaModel.create(req.body));
+const updateTask = async (req, res) => {
+  try {
+    const updatedTask = await taskService.updateTask(req.params.id, req.body);
+    res.json(updatedTask);
+  } catch (error) {
+    if (error.message === 'Tarefa não encontrada') {
+      res.status(404).json({ error: error.message });
+    } else {
+      res.status(400).json({ error: error.message });
+    }
   }
+};
 
-  static async updateStatus(req, res) {
-    await TarefaModel.updateStatus(req.params.id, req.body.status);
-    res.json({ message: "Status atualizado" });
+const deleteTask = async (req, res) => {
+  try {
+    const result = await taskService.deleteTask(req.params.id);
+    res.status(204).json(result);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
   }
+};
 
-  static async delete(req, res) {
-    await TarefaModel.delete(req.params.id);
-    res.json({ message: "Tarefa removida" });
+const getAllTasks = async (req, res) => {
+  try {
+    const tasks = await taskService.getAllTasks();
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro interno' });
   }
-}
+};
 
-export default TarefaController;
+const getTaskById = async (req, res) => {
+  try {
+    const task = await taskService.getTaskById(req.params.id);
+    res.json(task);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+const getTasksByProject = async (req, res) => {
+  try {
+    const tasks = await taskService.getTasksByProject(req.params.projectId);
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro interno' });
+  }
+};
+
+module.exports = {
+  createTask,
+  updateTask,
+  deleteTask,
+  getAllTasks,
+  getTaskById,
+  getTasksByProject
+};
