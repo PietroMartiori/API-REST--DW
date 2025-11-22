@@ -1,76 +1,103 @@
-import pool from '../db.js';
+import pool from "../db.js"
 
-export const createProject = async (data) => {
-  if (!data.name || data.name.trim() === '') {
-    throw new Error('Nome do projeto obrigatório');
+const createProject = async (data) => {
+  if (!data.name || data.name.trim() === "") {
+    throw new Error("Nome do projeto obrigatório")
   }
 
-  const connection = await pool.getConnection();
+  const connection = await pool.getConnection()
   try {
-    const [result] = await connection.execute(
-      'INSERT INTO Projects (name, description, status) VALUES (?, ?, ?)',
-      [data.name, data.description || null, data.status || 'Ativo']
-    );
-    return { id: result.insertId, ...data };
+    const status = data.status || "Ativo"
+    const result = await connection.execute("INSERT INTO Projects (name, description, status) VALUES (?, ?, ?)", [
+      data.name,
+      data.description || null,
+      status,
+    ])
+    return { id: result[0].insertId, ...data, status }
   } finally {
-    connection.release();
+    connection.release()
   }
-};
+}
 
-export const updateProject = async (id, data) => {
-  const connection = await pool.getConnection();
+const updateProject = async (id, data) => {
+  const connection = await pool.getConnection()
   try {
-    const [rows] = await connection.execute('SELECT * FROM Projects WHERE id = ?', [id]);
-    if (rows.length === 0) {
-      throw new Error('Projeto não encontrado');
+    // verificar se existe
+    const [projects] = await connection.execute("SELECT * FROM Projects WHERE id = ?", [id])
+    if (projects.length === 0) {
+      throw new Error("Projeto não encontrado")
     }
 
-    await connection.execute(
-      'UPDATE Projects SET name = ?, description = ?, status = ? WHERE id = ?',
-      [data.name || rows[0].name, data.description || rows[0].description, data.status || rows[0].status, id]
-    );
+    const project = projects[0]
 
-    const [updated] = await connection.execute('SELECT * FROM Projects WHERE id = ?', [id]);
-    return updated[0];
-  } finally {
-    connection.release();
-  }
-};
-
-export const deleteProject = async (id) => {
-  const connection = await pool.getConnection();
-  try {
-    const [rows] = await connection.execute('SELECT * FROM Projects WHERE id = ?', [id]);
-    if (rows.length === 0) {
-      throw new Error('Projeto não encontrado');
+    // preparar para atualizar
+    const updates = []
+    const values = []
+    if (data.name !== undefined) {
+      updates.push("name = ?")
+      values.push(data.name)
+    }
+    if (data.description !== undefined) {
+      updates.push("description = ?")
+      values.push(data.description)
+    }
+    if (data.status !== undefined) {
+      updates.push("status = ?")
+      values.push(data.status)
     }
 
-    await connection.execute('DELETE FROM Projects WHERE id = ?', [id]);
-    return { message: 'Projeto deletado' };
-  } finally {
-    connection.release();
-  }
-};
-
-export const getAllProjects = async () => {
-  const connection = await pool.getConnection();
-  try {
-    const [rows] = await connection.execute('SELECT * FROM Projects');
-    return rows;
-  } finally {
-    connection.release();
-  }
-};
-
-export const getProjectById = async (id) => {
-  const connection = await pool.getConnection();
-  try {
-    const [rows] = await connection.execute('SELECT * FROM Projects WHERE id = ?', [id]);
-    if (rows.length === 0) {
-      throw new Error('Projeto não encontrado');
+    if (updates.length === 0) {
+      return project
     }
-    return rows[0];
+
+    values.push(id)
+    await connection.execute(`UPDATE Projects SET ${updates.join(", ")} WHERE id = ?`, values)
+
+    // Retornar atualizado
+    const [updated] = await connection.execute("SELECT * FROM Projects WHERE id = ?", [id])
+    return updated[0]
   } finally {
-    connection.release();
+    connection.release()
   }
-};
+}
+
+const deleteProject = async (id) => {
+  const connection = await pool.getConnection()
+  try {
+    // se existe
+    const [projects] = await connection.execute("SELECT * FROM Projects WHERE id = ?", [id])
+    if (projects.length === 0) {
+      throw new Error("Projeto não encontrado")
+    }
+
+    await connection.execute("DELETE FROM Projects WHERE id = ?", [id])
+    return { message: "Projeto deletado" }
+  } finally {
+    connection.release()
+  }
+}
+
+const getAllProjects = async () => {
+  const connection = await pool.getConnection()
+  try {
+    const [projects] = await connection.execute("SELECT * FROM Projects")
+    return projects
+  } finally {
+    connection.release()
+  }
+}
+
+const getProjectById = async (id) => {
+  const connection = await pool.getConnection()
+  try {
+    const [projects] = await connection.execute("SELECT * FROM Projects WHERE id = ?", [id])
+    if (projects.length === 0) {
+      throw new Error("Projeto não encontrado")
+    }
+    return projects[0]
+  } finally {
+    connection.release()
+  }
+}
+
+export { createProject, updateProject, deleteProject, getAllProjects, getProjectById }
