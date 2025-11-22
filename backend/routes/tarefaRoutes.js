@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import * as taskController from '../controllers/TarefaController.js';
+import { validateTask, validateTaskUpdate } from '../middlewares/validation.js';
+
 const router = express.Router();
-const taskController = require('../controllers/TarefaController.js');
-const { validateTask, validateTaskUpdate } = require('../middlewares/validation.js');
 
 router.get('/', taskController.getAllTasks);
 router.get('/:id', taskController.getTaskById);
@@ -10,4 +11,4 @@ router.put('/:id', validateTaskUpdate, taskController.updateTask);
 router.delete('/:id', taskController.deleteTask);
 router.get('/project/:projectId', taskController.getTasksByProject);
 
-module.exports = router;
+export default router;

@@ -1,6 +1,6 @@
-const projectService = require('../services/projetoService.js');
+import * as projectService from '../services/projetoService.js';
 
-const createProject = async (req, res) => {
+export const createProject = async (req, res) => {
   try {
     const newProject = await projectService.createProject(req.body);
     res.status(201).json(newProject);
@@ -9,7 +9,7 @@ const createProject = async (req, res) => {
   }
 };
 
-const updateProject = async (req, res) => {
+export const updateProject = async (req, res) => {
   try {
     const updatedProject = await projectService.updateProject(req.params.id, req.body);
     res.json(updatedProject);
@@ -18,7 +18,7 @@ const updateProject = async (req, res) => {
   }
 };
 
-const deleteProject = async (req, res) => {
+export const deleteProject = async (req, res) => {
   try {
     const result = await projectService.deleteProject(req.params.id);
     res.status(204).json(result);
@@ -27,7 +27,7 @@ const deleteProject = async (req, res) => {
   }
 };
 
-const getAllProjects = async (req, res) => {
+export const getAllProjects = async (req, res) => {
   try {
     const projects = await projectService.getAllProjects();
     res.json(projects);
@@ -36,19 +36,11 @@ const getAllProjects = async (req, res) => {
   }
 };
 
-const getProjectById = async (req, res) => {
+export const getProjectById = async (req, res) => {
   try {
     const project = await projectService.getProjectById(req.params.id);
     res.json(project);
   } catch (error) {
     res.status(404).json({ error: error.message });
   }
-};
-
-module.exports = {
-  createProject,
-  updateProject,
-  deleteProject,
-  getAllProjects,
-  getProjectById
 };

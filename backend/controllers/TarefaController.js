@@ -1,6 +1,6 @@
-const taskService = require('../services/tarefaService.js');
+import * as taskService from '../services/tarefaService.js';
 
-const createTask = async (req, res) => {
+export const createTask = async (req, res) => {
   try {
     const newTask = await taskService.createTask(req.body);
     res.status(201).json(newTask);
@@ -9,7 +9,7 @@ const createTask = async (req, res) => {
   }
 };
 
-const updateTask = async (req, res) => {
+export const updateTask = async (req, res) => {
   try {
     const updatedTask = await taskService.updateTask(req.params.id, req.body);
     res.json(updatedTask);
@@ -22,7 +22,7 @@ const updateTask = async (req, res) => {
   }
 };
 
-const deleteTask = async (req, res) => {
+export const deleteTask = async (req, res) => {
   try {
     const result = await taskService.deleteTask(req.params.id);
     res.status(204).json(result);
@@ -31,7 +31,7 @@ const deleteTask = async (req, res) => {
   }
 };
 
-const getAllTasks = async (req, res) => {
+export const getAllTasks = async (req, res) => {
   try {
     const tasks = await taskService.getAllTasks();
     res.json(tasks);
@@ -40,7 +40,7 @@ const getAllTasks = async (req, res) => {
   }
 };
 
-const getTaskById = async (req, res) => {
+export const getTaskById = async (req, res) => {
   try {
     const task = await taskService.getTaskById(req.params.id);
     res.json(task);
@@ -49,20 +49,11 @@ const getTaskById = async (req, res) => {
   }
 };
 
-const getTasksByProject = async (req, res) => {
+export const getTasksByProject = async (req, res) => {
   try {
     const tasks = await taskService.getTasksByProject(req.params.projectId);
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: 'Erro interno' });
   }
-};
-
-module.exports = {
-  createTask,
-  updateTask,
-  deleteTask,
-  getAllTasks,
-  getTaskById,
-  getTasksByProject
 };

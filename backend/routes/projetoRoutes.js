@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import * as projectController from '../controllers/ProjetoController.js';
+import { validateProject } from '../middlewares/validation.js';
+
 const router = express.Router();
-const projectController = require('../controllers/ProjetoController');
-const { validateProject } = require('../middlewares/validation');
 
 router.get('/', projectController.getAllProjects);
 router.get('/:id', projectController.getProjectById);
@@ -9,4 +10,4 @@ router.post('/', validateProject, projectController.createProject);
 router.put('/:id', validateProject, projectController.updateProject);
 router.delete('/:id', projectController.deleteProject);
 
-module.exports = router;
+export default router;

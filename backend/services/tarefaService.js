@@ -1,55 +1,107 @@
-const { Task } = require('../models');
+import pool from '../db.js';
 
-const createTask = async (data) => {
+export const createTask = async (data) => {
   if (!data.projectId) {
     throw new Error('Projeto obrigatório para a tarefa');
   }
-  return await Task.create(data);
+
+  const connection = await pool.getConnection();
+  try {
+    const [result] = await connection.execute(
+      'INSERT INTO Tasks (title, description, status, projectId) VALUES (?, ?, ?, ?)',
+      [data.title, data.description || null, data.status || 'Pendente', data.projectId]
+    );
+    return { id: result.insertId, ...data };
+  } finally {
+    connection.release();
+  }
 };
 
-const updateTask = async (id, data) => {
-  const { status } = data;
-  if (status && !['Pendente', 'Em Andamento', 'Concluída'].includes(status)) {
+export const updateTask = async (id, data) => {
+  const validStatuses = ['Pendente', 'Em Andamento', 'Concluída'];
+  if (data.status && !validStatuses.includes(data.status)) {
     throw new Error('Status inválido');
   }
-  const task = await Task.findByPk(id);
-  if (!task) {
-    throw new Error('Tarefa não encontrada');
+
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute('SELECT * FROM Tasks WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      throw new Error('Tarefa não encontrada');
+    }
+
+    const updates = [];
+    const values = [];
+
+    if (data.title !== undefined) {
+      updates.push('title = ?');
+      values.push(data.title);
+    }
+    if (data.description !== undefined) {
+      updates.push('description = ?');
+      values.push(data.description);
+    }
+    if (data.status !== undefined) {
+      updates.push('status = ?');
+      values.push(data.status);
+    }
+
+    if (updates.length > 0) {
+      values.push(id);
+      await connection.execute(`UPDATE Tasks SET ${updates.join(', ')} WHERE id = ?`, values);
+    }
+
+    const [updated] = await connection.execute('SELECT * FROM Tasks WHERE id = ?', [id]);
+    return updated[0];
+  } finally {
+    connection.release();
   }
-  await task.update(data);
-  return task;
 };
 
-const deleteTask = async (id) => {
-  const task = await Task.findByPk(id);
-  if (!task) {
-    throw new Error('Tarefa não encontrada');
+export const deleteTask = async (id) => {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute('SELECT * FROM Tasks WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      throw new Error('Tarefa não encontrada');
+    }
+
+    await connection.execute('DELETE FROM Tasks WHERE id = ?', [id]);
+    return { message: 'Tarefa deletada' };
+  } finally {
+    connection.release();
   }
-  await task.destroy();
-  return { message: 'Tarefa deletada' };
 };
 
-const getAllTasks = async () => {
-  return await Task.findAll();
-};
-
-const getTaskById = async (id) => {
-  const task = await Task.findByPk(id);
-  if (!task) {
-    throw new Error('Tarefa não encontrada');
+export const getAllTasks = async () => {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute('SELECT * FROM Tasks');
+    return rows;
+  } finally {
+    connection.release();
   }
-  return task;
 };
 
-const getTasksByProject = async (projectId) => {
-  return await Task.findAll({ where: { projectId } });
+export const getTaskById = async (id) => {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute('SELECT * FROM Tasks WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      throw new Error('Tarefa não encontrada');
+    }
+    return rows[0];
+  } finally {
+    connection.release();
+  }
 };
 
-module.exports = {
-  createTask,
-  updateTask,
-  deleteTask,
-  getAllTasks,
-  getTaskById,
-  getTasksByProject
+export const getTasksByProject = async (projectId) => {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute('SELECT * FROM Tasks WHERE projectId = ?', [projectId]);
+    return rows;
+  } finally {
+    connection.release();
+  }
 };

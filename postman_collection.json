@@ -1,0 +1,246 @@
+{
+  "info": {
+    "name": "API Projetos e Tarefas",
+    "description": "Testes completos da API REST",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "HEALTH CHECK",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": [""]
+        }
+      }
+    },
+    {
+      "name": "PROJETOS",
+      "item": [
+        {
+          "name": "1. Listar todos os projetos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/projetos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["projetos"]
+            }
+          }
+        },
+        {
+          "name": "2. Obter projeto por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/projetos/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["projetos", "1"]
+            }
+          }
+        },
+        {
+          "name": "3. Criar novo projeto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Projeto E-commerce\",\n  \"description\": \"Plataforma de vendas online\",\n  \"status\": \"Ativo\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/projetos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["projetos"]
+            }
+          }
+        },
+        {
+          "name": "4. Atualizar projeto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Projeto E-commerce Atualizado\",\n  \"description\": \"Plataforma de vendas online com pagamento\",\n  \"status\": \"Ativo\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/projetos/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["projetos", "1"]
+            }
+          }
+        },
+        {
+          "name": "5. Deletar projeto",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/projetos/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["projetos", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TAREFAS",
+      "item": [
+        {
+          "name": "1. Listar todas as tarefas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/tarefas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["tarefas"]
+            }
+          }
+        },
+        {
+          "name": "2. Obter tarefa por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/tarefas/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["tarefas", "1"]
+            }
+          }
+        },
+        {
+          "name": "3. Listar tarefas por projeto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/tarefas/project/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["tarefas", "project", "1"]
+            }
+          }
+        },
+        {
+          "name": "4. Criar nova tarefa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Configurar banco de dados\",\n  \"description\": \"Setup inicial do MySQL\",\n  \"status\": \"Pendente\",\n  \"projectId\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/tarefas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["tarefas"]
+            }
+          }
+        },
+        {
+          "name": "5. Mudar status para 'Em Andamento'",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Configurar banco de dados\",\n  \"description\": \"Setup inicial do MySQL\",\n  \"status\": \"Em Andamento\",\n  \"projectId\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/tarefas/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["tarefas", "1"]
+            }
+          }
+        },
+        {
+          "name": "6. Mudar status para 'Concluída'",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Configurar banco de dados\",\n  \"description\": \"Setup inicial do MySQL\",\n  \"status\": \"Concluída\",\n  \"projectId\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/tarefas/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["tarefas", "1"]
+            }
+          }
+        },
+        {
+          "name": "7. Deletar tarefa",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/tarefas/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["tarefas", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
