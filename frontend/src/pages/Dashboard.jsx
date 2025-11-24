@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { createProject, deleteProject, getProjects } from '../api/projects';
-import { createTask, deleteTask, getTasksByProject, updateTask } from '../api/tasks';
 import TopBar from '../components/TopBar';
+import useAuth from '../hooks/useAuth';
 
 const taskStatuses = ['Pendente', 'Em Andamento', 'Concluída'];
+const API_URL = 'http://localhost:3000';
 
 const Dashboard = () => {
+  const { token } = useAuth();
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -25,10 +26,37 @@ const Dashboard = () => {
     setTimeout(() => setFeedback(null), 4000);
   }, []);
 
+  const request = useCallback(
+    async (path, options = {}) => {
+      const response = await fetch(`${API_URL}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : undefined,
+          ...(options.headers || {}),
+        },
+      });
+
+      if (response.status === 204) {
+        return null;
+      }
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        const error = new Error(payload.error || payload.message || 'Erro ao comunicar com o backend');
+        error.response = { data: payload };
+        throw error;
+      }
+
+      return response.json();
+    },
+    [token],
+  );
+
   const fetchProjects = useCallback(async () => {
     setLoadingProjects(true);
     try {
-      const data = await getProjects();
+      const data = await request('/projetos');
       setProjects(data);
       if (!selectedProjectId && data.length) {
         setSelectedProjectId(data[0].id);
@@ -38,7 +66,7 @@ const Dashboard = () => {
     } finally {
       setLoadingProjects(false);
     }
-  }, [selectedProjectId, showMessage]);
+  }, [request, selectedProjectId, showMessage]);
 
   const fetchTasks = useCallback(
     async (projectId) => {
@@ -48,7 +76,7 @@ const Dashboard = () => {
       }
       setLoadingTasks(true);
       try {
-        const data = await getTasksByProject(projectId);
+        const data = await request(`/tarefas/project/${projectId}`);
         setTasks(data);
       } catch (err) {
         showMessage(err.response?.data?.error || 'Erro ao carregar tarefas', 'error');
@@ -56,7 +84,7 @@ const Dashboard = () => {
         setLoadingTasks(false);
       }
     },
-    [showMessage],
+    [request, showMessage],
   );
 
   useEffect(() => {
@@ -74,7 +102,10 @@ const Dashboard = () => {
   const handleProjectSubmit = async (event) => {
     event.preventDefault();
     try {
-      const created = await createProject(projectForm);
+      const created = await request('/projetos', {
+        method: 'POST',
+        body: JSON.stringify(projectForm),
+      });
       showMessage('Projeto criado com sucesso!');
       setProjectForm({ name: '', description: '' });
       setProjects((prev) => [...prev, created]);
@@ -87,7 +118,7 @@ const Dashboard = () => {
   const handleProjectDelete = async (projectId) => {
     if (!window.confirm('Deseja realmente excluir este projeto?')) return;
     try {
-      await deleteProject(projectId);
+      await request(`/projetos/${projectId}`, { method: 'DELETE' });
       showMessage('Projeto excluído');
       setProjects((prev) => prev.filter((project) => project.id !== projectId));
       if (selectedProjectId === projectId) {
@@ -106,7 +137,10 @@ const Dashboard = () => {
     }
     try {
       const payload = { ...taskForm, projectId: selectedProjectId };
-      const created = await createTask(payload);
+      const created = await request('/tarefas', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
       showMessage('Tarefa criada!');
       setTaskForm({ title: '', description: '', status: 'Pendente' });
       setTasks((prev) => [...prev, created]);
@@ -118,7 +152,7 @@ const Dashboard = () => {
   const handleTaskDelete = async (taskId) => {
     if (!window.confirm('Deseja realmente excluir esta tarefa?')) return;
     try {
-      await deleteTask(taskId);
+      await request(`/tarefas/${taskId}`, { method: 'DELETE' });
       setTasks((prev) => prev.filter((task) => task.id !== taskId));
       showMessage('Tarefa excluída');
     } catch (err) {
@@ -128,7 +162,10 @@ const Dashboard = () => {
 
   const handleTaskStatusChange = async (taskId, status) => {
     try {
-      const updated = await updateTask(taskId, { status });
+      const updated = await request(`/tarefas/${taskId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      });
       setTasks((prev) => prev.map((task) => (task.id === taskId ? updated : task)));
       showMessage('Status atualizado');
     } catch (err) {

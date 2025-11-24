@@ -33,17 +33,13 @@
 
 ## Frontend (Vite + React)
 
-1. Crie um arquivo `frontend/.env` com a URL do backend:
-   ```
-   VITE_API_URL=http://localhost:3000
-   ```
-2. Instale dependências do frontend:
+1. Instale dependências do frontend:
    ```
    cd frontend
    npm install
    ```
-3. Suba o app:
+2. Suba o app:
    ```
    npm run dev
    ```
-4. Faça login com um usuário válido para liberar o dashboard de projetos/tarefas.
+3. Faça login ou cadastre um usuário. O frontend já consome `http://localhost:3000` diretamente, então não é necessário arquivo `.env`.

@@ -1,9 +1,9 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
-import { loginRequest, registerRequest } from '../api/auth';
 
 export const AuthContext = createContext(undefined);
 
 const storageKey = 'auth_state';
+const API_URL = 'http://localhost:3000';
 
 const readPersistedState = () => {
   try {
@@ -21,6 +21,27 @@ const persistState = (state) => {
   } catch {
     /* ignore */
   }
+};
+
+const buildError = async (response) => {
+  const payload = await response.json().catch(() => ({}));
+  const error = new Error(payload.message || 'Erro ao comunicar com o backend');
+  error.response = { data: payload };
+  return error;
+};
+
+const postAuth = async (path, body) => {
+  const response = await fetch(`${API_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw await buildError(response);
+  }
+
+  return response.json();
 };
 
 export const AuthProvider = ({ children }) => {
@@ -48,14 +69,14 @@ export const AuthProvider = ({ children }) => {
   }, [token, user]);
 
   const login = useCallback(async (credentials) => {
-    const response = await loginRequest(credentials);
+    const response = await postAuth('/auth/login', credentials);
     setToken(response.token);
     setUser(response.usuario);
     return response;
   }, []);
 
   const register = useCallback(async (payload) => {
-    const response = await registerRequest(payload);
+    const response = await postAuth('/auth/register', payload);
     setToken(response.token);
     setUser(response.usuario);
     return response;

@@ -1,52 +1,66 @@
-import * as projectService from "../services/projetoService.js"
+import * as projetoService from "../services/projetoService.js"
 
-const createProject = async (req, res) => {
+export const getAllProjects = async (req, res) => {
   try {
-    const newProject = await projectService.createProject(req.body)
-    res.status(201).json(newProject)
+    const projects = await projetoService.getAllProjects()
+    res.status(200).json(projects)
   } catch (error) {
+    console.error("[v0] Erro ao buscar projetos:", error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
+export const getProjectById = async (req, res) => {
+  try {
+    const project = await projetoService.getProjectById(req.params.id)
+    if (!project) {
+      return res.status(404).json({ error: "Projeto não encontrado" })
+    }
+    res.status(200).json(project)
+  } catch (error) {
+    console.error("[v0] Erro ao buscar projeto:", error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
+export const createProject = async (req, res) => {
+  try {
+    const { name, description, status } = req.body
+
+    if (!name || name.trim() === "") {
+      return res.status(400).json({ error: "Nome do projeto é obrigatório" })
+    }
+
+    const project = await projetoService.createProject({ name, description, status })
+    res.status(201).json(project)
+  } catch (error) {
+    console.error("[v0] Erro ao criar projeto:", error)
     res.status(400).json({ error: error.message })
   }
 }
 
-const updateProject = async (req, res) => {
+export const updateProject = async (req, res) => {
   try {
-    const updatedProject = await projectService.updateProject(req.params.id, req.body)
-    res.json(updatedProject)
-  } catch (error) {
-    if (error.message === "Projeto não encontrado") {
-      res.status(404).json({ error: error.message })
-    } else {
-      res.status(400).json({ error: error.message })
+    const { name, description, status } = req.body
+    const project = await projetoService.updateProject(req.params.id, { name, description, status })
+
+    if (!project) {
+      return res.status(404).json({ error: "Projeto não encontrado" })
     }
+
+    res.status(200).json(project)
+  } catch (error) {
+    console.error("[v0] Erro ao atualizar projeto:", error)
+    res.status(400).json({ error: error.message })
   }
 }
 
-const deleteProject = async (req, res) => {
+export const deleteProject = async (req, res) => {
   try {
-    const result = await projectService.deleteProject(req.params.id)
-    res.status(204).json(result)
+    await projetoService.deleteProject(req.params.id)
+    res.status(204).send()
   } catch (error) {
+    console.error("[v0] Erro ao deletar projeto:", error)
     res.status(404).json({ error: error.message })
   }
 }
-
-const getAllProjects = async (req, res) => {
-  try {
-    const projects = await projectService.getAllProjects()
-    res.json(projects)
-  } catch (error) {
-    res.status(500).json({ error: "Erro interno" })
-  }
-}
-
-const getProjectById = async (req, res) => {
-  try {
-    const project = await projectService.getProjectById(req.params.id)
-    res.json(project)
-  } catch (error) {
-    res.status(404).json({ error: error.message })
-  }
-}
-
-export { createProject, updateProject, deleteProject, getAllProjects, getProjectById }
