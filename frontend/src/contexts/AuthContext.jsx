@@ -17,14 +17,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar se há token salvo e validar
     const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
-      // Validar token com o backend
       validateToken(savedToken);
     } else {
       setLoading(false);
@@ -37,7 +35,6 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.user);
       setLoading(false);
     } catch (error) {
-      // Token inválido, limpar dados
       logout();
     }
   };
