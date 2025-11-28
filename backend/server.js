@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import projetoRoutes from './routes/projects';
 import projetoRoutes from './routes/projetoRoutes.js';
 import tarefaRoutes from './routes/tarefaRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -15,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/projetos', authenticate, projetoRoutes);
+app.use('/projetos', authenticate, projetoRoutes);
 app.use('/tarefas', authenticate, tarefaRoutes);
 app.use('/auth', authRoutes);
 

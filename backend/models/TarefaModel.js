@@ -1,24 +1,36 @@
-const connection = require('../db.js');
+import pool from '../db.js';
 
-const Task = {
-  getAll: (callback) => {
-    connection.query('SELECT * FROM tasks', callback);
-  },
-  getById: (id, callback) => {
-    connection.query('SELECT * FROM tasks WHERE id = ?', [id], callback);
-  },
-  create: (task, callback) => {
-    connection.query('INSERT INTO tasks (name, status, project_id) VALUES (?, ?, ?)', [task.name, task.status || 'Pendente', task.project_id], callback);
-  },
-  update: (id, task, callback) => {
-    connection.query('UPDATE tasks SET name = ?, status = ?, project_id = ? WHERE id = ?', [task.name, task.status, task.project_id, id], callback);
-  },
-  delete: (id, callback) => {
-    connection.query('DELETE FROM tasks WHERE id = ?', [id], callback);
-  },
-  getByProject: (projectId, callback) => {
-    connection.query('SELECT * FROM tasks WHERE project_id = ?', [projectId], callback);
+class TarefaModel {
+
+  static async getAllByProjeto(projeto_id) {
+    const [rows] = await pool.query(
+      "SELECT * FROM tarefas WHERE projeto_id = ?",
+      [projeto_id]
+    );
+    return rows;
   }
-};
 
-module.exports = Task;
+  static async create(tarefa) {
+    const { projeto_id, titulo, descricao } = tarefa;
+    const [result] = await pool.query(
+      "INSERT INTO tarefas (projeto_id, titulo, descricao) VALUES (?, ?, ?)",
+      [projeto_id, titulo, descricao]
+    );
+    return { id: result.insertId, ...tarefa };
+  }
+
+  static async updateStatus(id, status) {
+    await pool.query(
+      "UPDATE tarefas SET status = ? WHERE id = ?",
+      [status, id]
+    );
+    return true;
+  }
+
+  static async delete(id) {
+    await pool.query("DELETE FROM tarefas WHERE id = ?", [id]);
+    return true;
+  }
+}
+
+export default TarefaModel;

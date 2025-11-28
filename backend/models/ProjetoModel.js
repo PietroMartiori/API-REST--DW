@@ -1,22 +1,39 @@
-const connection = require('../db.js');
+import pool from '../db.js';
 
-const Project = {
-  getAll: (callback) => {
-    connection.query('SELECT * FROM projects', callback);
-  },
-  getById: (id, callback) => {
-    connection.query('SELECT * FROM projects WHERE id = ?', [id], callback);
-  },
-  create: (project, callback) => {
-    connection.query('INSERT INTO projects (name, description, status) VALUES (?, ?, ?)', [project.name, project.description, project.status || 'Pendente'], callback);
-  },
-  update: (id, project, callback) => {
-    connection.query('UPDATE projects SET name = ?, description = ?, status = ? WHERE id = ?', [project.name, project.description, project.status, id], callback);
-  },
-  delete: (id, callback) => {
-    connection.query('DELETE FROM projects WHERE id = ?', [id], callback);
+class ProjetoModel {
+
+  static async getAll() {
+    const [rows] = await pool.query("SELECT * FROM projetos");
+    return rows;
   }
-};
 
-module.exports = Project;
+  static async getById(id) {
+    const [rows] = await pool.query("SELECT * FROM projetos WHERE id = ?", [id]);
+    return rows[0];
+  }
 
+  static async create(projeto) {
+    const { nome, descricao } = projeto;
+    const [result] = await pool.query(
+      "INSERT INTO projetos (nome, descricao) VALUES (?, ?)",
+      [nome, descricao]
+    );
+    return { id: result.insertId, ...projeto };
+  }
+
+  static async update(id, projeto) {
+    const { nome, descricao } = projeto;
+    await pool.query(
+      "UPDATE projetos SET nome = ?, descricao = ? WHERE id = ?",
+      [nome, descricao, id]
+    );
+    return { id, ...projeto };
+  }
+
+  static async delete(id) {
+    await pool.query("DELETE FROM projetos WHERE id = ?", [id]);
+    return true;
+  }
+}
+
+export default ProjetoModel;
