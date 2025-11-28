@@ -24,7 +24,6 @@ const ProjectsPage = () => {
       <div className="page-content">
         <div className="page-header">
           <h2>Gerenciamento de Projetos</h2>
-          <p>Crie e gerencie seus projetos</p>
         </div>
 
         <div className="page-grid">

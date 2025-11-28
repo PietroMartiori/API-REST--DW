@@ -1,45 +1,60 @@
-# API-REST--DW
+# API REST (Gerenciamento de Tarefas e Projetos)
+<br>
 
-## Autenticação JWT
+# Tecnologias utilizadas
 
-1. Crie um arquivo `backend/.env` com os valores:
-   ```
-   PORT=3000
-   JWT_SECRET=sua-chave-super-secreta
-   JWT_EXPIRES_IN=1h
-   ```
-2. No diretório `backend`, instale as dependências:
-   ```
-   npm install
-   ```
-3. Faça uma requisição `POST /auth/login` com JSON:
-   ```json
-   {
-     "email": "usuario@exemplo.com",
-     "senha": "senhaDoUsuario"
-   }
-   ```
-   A resposta inclui o token JWT e os dados básicos do usuário.
-4. Utilize o token retornado no header `Authorization: Bearer <token>` para acessar qualquer rota de projetos (`/projetos`) ou tarefas (`/tarefas`). Sem esse header válido a API responde `401`.
-5. Para cadastrar usuários, use `POST /auth/register` com:
-   ```json
-   {
-     "nome": "Nome do Usuário",
-     "email": "usuario@exemplo.com",
-     "senha": "senhaSegura"
-   }
-   ```
-   O cadastro também retorna um token e os dados do usuário autenticado.
+## Frontend 
 
-## Frontend (Vite + React)
+- React.js
+- Vite
+- JavaScript (ES6+)
+- Axios
 
-1. Instale dependências do frontend:
-   ```
-   cd frontend
-   npm install
-   ```
-2. Suba o app:
-   ```
-   npm run dev
-   ```
-3. Faça login ou cadastre um usuário. O frontend já consome `http://localhost:3000` diretamente, então não é necessário arquivo `.env`.
+
+## Backend 
+
+- Node.js
+- Express.js
+- CORS
+- Dotenv
+- Bcrypt 
+- Jsonwebtoken 
+- Mysql2 
+- Nodemon
+
+## Banco de Dados
+
+- MySQL (Workbench)
+
+<br>
+
+# Como rodar o projeto
+
+## Pré-requisitos
+
+- Node.js e npm instalados
+
+- Banco de dados MySQL instalado e aberto
+
+## Instalação e Configuração 
+1. **Clone o repositório**
+- git clone https://github.com/PietroMartiori/API-REST--DW
+- cd API-REST--DW
+
+2. **Configure o banco de dados**
+
+- No seu servidor MySQL, copie e cole todo o conteúdo da pasta = database.sql dentro do backend.
+
+3. **Backend**
+- cd backend
+- npm install
+
+4. **Inicie o servidor backend**
+- node server.js ou npm start (deve retornar Servidor rodando na porta 3000)
+
+5. **Frontend**
+- cd ../frontend
+- npm install
+- npm run dev
+
+- Acesse a API backend via http://localhost:3000

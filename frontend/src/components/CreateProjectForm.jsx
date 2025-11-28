@@ -3,7 +3,7 @@ import { projetoService } from '../services/projetoService';
 import { validateProject } from '../utils/validation';
 import { formatErrorMessage } from '../utils/errorHandler';
 import './CreateProjectForm.css';
-
+ 
 const CreateProjectForm = ({ onProjectCreated }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -26,13 +26,11 @@ const CreateProjectForm = ({ onProjectCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Preparar dados: description vazio vira null (como no backend)
     const projectData = {
       name: formData.name.trim(),
       description: formData.description.trim() || null
     };
 
-    // Validação usando o mesmo padrão do backend
     const validation = validateProject(projectData);
     if (!validation.isValid) {
       setError(formatErrorMessage(validation.error));
@@ -52,12 +50,9 @@ const CreateProjectForm = ({ onProjectCreated }) => {
           onProjectCreated();
         }
 
-        // Limpar mensagem de sucesso após 3 segundos
         setTimeout(() => setSuccess(false), 3000);
       }
     } catch (err) {
-      // Formatar mensagem de erro do backend
-      // O serviço lança { message, status }, mas também pode vir diretamente do axios
       const errorMsg = err.message || err.response?.data?.error || 'Erro ao criar projeto';
       setError(formatErrorMessage(errorMsg));
     } finally {
@@ -70,7 +65,7 @@ const CreateProjectForm = ({ onProjectCreated }) => {
       <h2>Criar Novo Projeto</h2>
       <form onSubmit={handleSubmit} className="project-form">
         <div className="form-group">
-          <label htmlFor="name">Nome do Projeto *</label>
+          <label htmlFor="name">Nome do Projeto</label>
           <input
             type="text"
             id="name"
@@ -89,7 +84,7 @@ const CreateProjectForm = ({ onProjectCreated }) => {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Digite a descrição do projeto (opcional)"
+            placeholder="Digite a descrição do projeto"
             rows="4"
           />
         </div>

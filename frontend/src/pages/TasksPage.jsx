@@ -45,7 +45,6 @@ const TasksPage = () => {
       <div className="page-content">
         <div className="page-header">
           <h2>Gerenciamento de Tarefas</h2>
-          <p>Crie e gerencie tarefas dos seus projetos</p>
         </div>
 
         <div className="page-grid">

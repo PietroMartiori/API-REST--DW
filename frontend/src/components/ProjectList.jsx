@@ -143,14 +143,14 @@ const ProjectList = ({ onSelectProject, selectedProjectId, onProjectUpdated }) =
                       className="btn-edit"
                       title="Editar projeto"
                     >
-                      ✏️
+                      Editar
                     </button>
                     <button
                       onClick={(e) => handleDelete(project.id, e)}
                       className="btn-delete"
                       title="Excluir projeto"
                     >
-                      🗑️
+                      Excluir
                     </button>
                   </div>
                 </>

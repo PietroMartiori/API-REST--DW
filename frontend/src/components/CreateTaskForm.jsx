@@ -51,14 +51,12 @@ const CreateTaskForm = ({ selectedProjectId, onTaskCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Preparar dados para validação (conforme backend)
     const taskData = {
       title: formData.title.trim(),
       description: formData.description.trim() || null,
       projectId: parseInt(formData.projectId)
     };
 
-    // Validação usando o mesmo padrão do backend
     const validation = validateTask(taskData);
     if (!validation.isValid) {
       setError(formatErrorMessage(validation.error));
@@ -82,12 +80,9 @@ const CreateTaskForm = ({ selectedProjectId, onTaskCreated }) => {
           onTaskCreated();
         }
 
-        // Limpar mensagem de sucesso após 3 segundos
         setTimeout(() => setSuccess(false), 3000);
       }
     } catch (err) {
-      // Formatar mensagem de erro do backend
-      // O serviço lança { message, status }, mas também pode vir diretamente do axios
       const errorMsg = err.message || err.response?.data?.error || 'Erro ao criar tarefa';
       setError(formatErrorMessage(errorMsg));
     } finally {
@@ -110,7 +105,7 @@ const CreateTaskForm = ({ selectedProjectId, onTaskCreated }) => {
       <form onSubmit={handleSubmit} className="task-form">
         {!selectedProjectId && (
           <div className="form-group">
-            <label htmlFor="projectId">Projeto *</label>
+            <label htmlFor="projectId">Projeto</label>
             <select
               id="projectId"
               name="projectId"
@@ -129,7 +124,7 @@ const CreateTaskForm = ({ selectedProjectId, onTaskCreated }) => {
         )}
 
         <div className="form-group">
-          <label htmlFor="title">Título da Tarefa *</label>
+          <label htmlFor="title">Título da Tarefa</label>
           <input
             type="text"
             id="title"
@@ -148,7 +143,7 @@ const CreateTaskForm = ({ selectedProjectId, onTaskCreated }) => {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Digite a descrição da tarefa (opcional)"
+            placeholder="Digite a descrição da tarefa"
             rows="4"
           />
         </div>

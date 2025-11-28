@@ -83,10 +83,10 @@
   background: #4CAF50;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 5px 10px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   transition: background 0.3s ease;
   flex: 1;
@@ -101,12 +101,13 @@
 }
 
 .btn-delete-task {
-  background: none;
+  color: white;
+  background: red;
   border: none;
-  font-size: 18px;
+  font-size: 15px;
   cursor: pointer;
   padding: 5px 10px;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: background 0.3s ease;
 }
 

@@ -38,7 +38,6 @@ const TaskList = ({ projectId, projectName, onTaskUpdate }) => {
     const nextIndex = (currentIndex + 1) % statusOrder.length;
     const newStatus = statusOrder[nextIndex];
 
-    // Validação usando o mesmo padrão do backend
     const validation = validateTaskUpdate({ status: newStatus });
     if (!validation.isValid) {
       alert(`Erro de validação: ${formatErrorMessage(validation.error)}`);
@@ -52,7 +51,6 @@ const TaskList = ({ projectId, projectName, onTaskUpdate }) => {
         onTaskUpdate();
       }
     } catch (err) {
-      // O serviço lança { message, status }, mas também pode vir diretamente do axios
       const errorMsg = err.message || err.response?.data?.error || 'Erro ao atualizar status';
       alert(`Erro ao atualizar status: ${formatErrorMessage(errorMsg)}`);
     }
@@ -130,7 +128,7 @@ const TaskList = ({ projectId, projectName, onTaskUpdate }) => {
                   onClick={(e) => handleDelete(task.id, e)}
                   title="Excluir tarefa"
                 >
-                  🗑️
+                  Excluir
                 </button>
               </div>
             </div>
