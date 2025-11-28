@@ -2,7 +2,7 @@ import * as projectService from "../services/projetoService.js"
 
 const createProject = async (req, res) => {
   try {
-    const newProject = await projectService.createProject(req.body)
+    const newProject = await projectService.createProject(req.body, req.user.userId)
     res.status(201).json(newProject)
   } catch (error) {
     res.status(400).json({ error: error.message })
@@ -11,7 +11,7 @@ const createProject = async (req, res) => {
 
 const updateProject = async (req, res) => {
   try {
-    const updatedProject = await projectService.updateProject(req.params.id, req.body)
+    const updatedProject = await projectService.updateProject(req.params.id, req.body, req.user.userId)
     res.json(updatedProject)
   } catch (error) {
     if (error.message === "Projeto não encontrado") {
@@ -24,7 +24,7 @@ const updateProject = async (req, res) => {
 
 const deleteProject = async (req, res) => {
   try {
-    const result = await projectService.deleteProject(req.params.id)
+    const result = await projectService.deleteProject(req.params.id, req.user.userId)
     res.status(204).json(result)
   } catch (error) {
     res.status(404).json({ error: error.message })
@@ -33,7 +33,7 @@ const deleteProject = async (req, res) => {
 
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await projectService.getAllProjects()
+    const projects = await projectService.getAllProjects(req.user.userId)
     res.json(projects)
   } catch (error) {
     res.status(500).json({ error: "Erro interno" })
@@ -42,7 +42,7 @@ const getAllProjects = async (req, res) => {
 
 const getProjectById = async (req, res) => {
   try {
-    const project = await projectService.getProjectById(req.params.id)
+    const project = await projectService.getProjectById(req.params.id, req.user.userId)
     res.json(project)
   } catch (error) {
     res.status(404).json({ error: error.message })

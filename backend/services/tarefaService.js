@@ -1,6 +1,6 @@
 import pool from "../db.js"
 
-const createTask = async (data) => {
+const createTask = async (data, userId) => {
   if (!data.projectId) {
     throw new Error("Projeto obrigatório para a tarefa")
   }
@@ -10,6 +10,15 @@ const createTask = async (data) => {
 
   const connection = await pool.getConnection()
   try {
+    // Verificar se o projeto pertence ao usuário
+    const [projects] = await connection.execute(
+      "SELECT * FROM Projects WHERE id = ? AND userId = ?",
+      [data.projectId, userId]
+    )
+    if (projects.length === 0) {
+      throw new Error("Projeto não encontrado")
+    }
+
     const status = data.status || "Pendente"
     const result = await connection.execute(
       "INSERT INTO Tasks (title, description, status, projectId) VALUES (?, ?, ?, ?)",
@@ -21,20 +30,34 @@ const createTask = async (data) => {
   }
 }
 
-const updateTask = async (id, data) => {
+const updateTask = async (id, data, userId) => {
   const connection = await pool.getConnection()
   try {
     if (data.status && !["Pendente", "Em Andamento", "Concluída"].includes(data.status)) {
       throw new Error("Status inválido")
     }
 
-    // Verificar se existe
-    const [tasks] = await connection.execute("SELECT * FROM Tasks WHERE id = ?", [id])
+    // Verificar se existe e se o projeto pertence ao usuário
+    const [tasks] = await connection.execute(
+      "SELECT t.* FROM Tasks t INNER JOIN Projects p ON t.projectId = p.id WHERE t.id = ? AND p.userId = ?",
+      [id, userId]
+    )
     if (tasks.length === 0) {
       throw new Error("Tarefa não encontrada")
     }
 
     const task = tasks[0]
+
+    // Se projectId for alterado, verificar se o novo projeto pertence ao usuário
+    if (data.projectId !== undefined && data.projectId !== task.projectId) {
+      const [projects] = await connection.execute(
+        "SELECT * FROM Projects WHERE id = ? AND userId = ?",
+        [data.projectId, userId]
+      )
+      if (projects.length === 0) {
+        throw new Error("Projeto não encontrado")
+      }
+    }
 
     // Preparar para atualizar
     const updates = []
@@ -71,11 +94,14 @@ const updateTask = async (id, data) => {
   }
 }
 
-const deleteTask = async (id) => {
+const deleteTask = async (id, userId) => {
   const connection = await pool.getConnection()
   try {
-    // Verificar se existe
-    const [tasks] = await connection.execute("SELECT * FROM Tasks WHERE id = ?", [id])
+    // Verificar se existe e se o projeto pertence ao usuário
+    const [tasks] = await connection.execute(
+      "SELECT t.* FROM Tasks t INNER JOIN Projects p ON t.projectId = p.id WHERE t.id = ? AND p.userId = ?",
+      [id, userId]
+    )
     if (tasks.length === 0) {
       throw new Error("Tarefa não encontrada")
     }
@@ -87,20 +113,26 @@ const deleteTask = async (id) => {
   }
 }
 
-const getAllTasks = async () => {
+const getAllTasks = async (userId) => {
   const connection = await pool.getConnection()
   try {
-    const [tasks] = await connection.execute("SELECT * FROM Tasks")
+    const [tasks] = await connection.execute(
+      "SELECT t.* FROM Tasks t INNER JOIN Projects p ON t.projectId = p.id WHERE p.userId = ?",
+      [userId]
+    )
     return tasks
   } finally {
     connection.release()
   }
 }
 
-const getTaskById = async (id) => {
+const getTaskById = async (id, userId) => {
   const connection = await pool.getConnection()
   try {
-    const [tasks] = await connection.execute("SELECT * FROM Tasks WHERE id = ?", [id])
+    const [tasks] = await connection.execute(
+      "SELECT t.* FROM Tasks t INNER JOIN Projects p ON t.projectId = p.id WHERE t.id = ? AND p.userId = ?",
+      [id, userId]
+    )
     if (tasks.length === 0) {
       throw new Error("Tarefa não encontrada")
     }
@@ -110,10 +142,22 @@ const getTaskById = async (id) => {
   }
 }
 
-const getTasksByProject = async (projectId) => {
+const getTasksByProject = async (projectId, userId) => {
   const connection = await pool.getConnection()
   try {
-    const [tasks] = await connection.execute("SELECT * FROM Tasks WHERE projectId = ?", [projectId])
+    // Verificar se o projeto pertence ao usuário
+    const [projects] = await connection.execute(
+      "SELECT * FROM Projects WHERE id = ? AND userId = ?",
+      [projectId, userId]
+    )
+    if (projects.length === 0) {
+      throw new Error("Projeto não encontrado")
+    }
+
+    const [tasks] = await connection.execute(
+      "SELECT * FROM Tasks WHERE projectId = ?",
+      [projectId]
+    )
     return tasks
   } finally {
     connection.release()

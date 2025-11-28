@@ -1,0 +1,137 @@
+.task-list-container {
+  padding: 20px;
+}
+
+.task-list-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.task-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.task-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.task-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 10px 0;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: #ff9800;
+  color: white;
+}
+
+.status-in-progress {
+  background: #2196F3;
+  color: white;
+}
+
+.status-completed {
+  background: #4CAF50;
+  color: white;
+}
+
+.task-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.btn-status {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+  flex: 1;
+}
+
+.btn-status:hover {
+  background: #45a049;
+}
+
+.btn-status:active {
+  transform: scale(0.98);
+}
+
+.btn-delete-task {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.btn-delete-task:hover {
+  background: #ffebee;
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+  font-size: 16px;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+}
+
+.error {
+  color: #f44336;
+}
+
+.loading {
+  color: #666;
+}
+

@@ -2,7 +2,7 @@ import * as taskService from "../services/tarefaService.js"
 
 const createTask = async (req, res) => {
   try {
-    const newTask = await taskService.createTask(req.body)
+    const newTask = await taskService.createTask(req.body, req.user.userId)
     res.status(201).json(newTask)
   } catch (error) {
     res.status(400).json({ error: error.message })
@@ -11,7 +11,7 @@ const createTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
   try {
-    const updatedTask = await taskService.updateTask(req.params.id, req.body)
+    const updatedTask = await taskService.updateTask(req.params.id, req.body, req.user.userId)
     res.json(updatedTask)
   } catch (error) {
     if (error.message === "Tarefa não encontrada") {
@@ -24,7 +24,7 @@ const updateTask = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
-    const result = await taskService.deleteTask(req.params.id)
+    const result = await taskService.deleteTask(req.params.id, req.user.userId)
     res.status(204).json(result)
   } catch (error) {
     res.status(404).json({ error: error.message })
@@ -33,7 +33,7 @@ const deleteTask = async (req, res) => {
 
 const getAllTasks = async (req, res) => {
   try {
-    const tasks = await taskService.getAllTasks()
+    const tasks = await taskService.getAllTasks(req.user.userId)
     res.json(tasks)
   } catch (error) {
     res.status(500).json({ error: "Erro interno" })
@@ -42,7 +42,7 @@ const getAllTasks = async (req, res) => {
 
 const getTaskById = async (req, res) => {
   try {
-    const task = await taskService.getTaskById(req.params.id)
+    const task = await taskService.getTaskById(req.params.id, req.user.userId)
     res.json(task)
   } catch (error) {
     res.status(404).json({ error: error.message })
@@ -51,10 +51,10 @@ const getTaskById = async (req, res) => {
 
 const getTasksByProject = async (req, res) => {
   try {
-    const tasks = await taskService.getTasksByProject(req.params.projectId)
+    const tasks = await taskService.getTasksByProject(req.params.projectId, req.user.userId)
     res.json(tasks)
   } catch (error) {
-    res.status(500).json({ error: "Erro interno" })
+    res.status(404).json({ error: error.message })
   }
 }
 
